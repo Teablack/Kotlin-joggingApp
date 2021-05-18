@@ -23,9 +23,12 @@ class MyAdapter(private val parentActivity: MainActivity,
                         putString(DetailFragment.ARG_ITEM_ID, item.id)
                     }
                 }
+                val stoper = StoperFragment()
+
                 parentActivity.supportFragmentManager
                     .beginTransaction()
                     .replace(R.id.item_detail_container, fragment)
+                    .replace(R.id.stoper_container,stoper)
                     .commit()
             } else {
                 val intent = Intent(v.context, DetailActivity::class.java).apply {

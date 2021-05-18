@@ -19,7 +19,7 @@ class DetailFragment : Fragment() {
         arguments?.let {
             if (it.containsKey(ARG_ITEM_ID)) {
                 item = Route.route_map[it.getString(ARG_ITEM_ID)]
-                activity!!.findViewById<Toolbar>(R.id.detail_toolbar).title = item!!.content
+                activity?.findViewById<Toolbar>(R.id.detail_toolbar)?.title = item!!.content
 
             }
         }
