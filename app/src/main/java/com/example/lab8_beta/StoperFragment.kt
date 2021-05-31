@@ -1,5 +1,7 @@
 package com.example.lab8_beta
 
+import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
@@ -14,7 +16,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 
 
 class StoperFragment : Fragment(), View.OnClickListener {
-
+    lateinit var timeView : TextView;
     lateinit var sharedPref : SharedPreferences;
     private var seconds: Int = 0;
     private var running = false;
@@ -96,11 +98,22 @@ class StoperFragment : Fragment(), View.OnClickListener {
 
     fun onClickStop() {
         running = false
+        val scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 4f)
+        val scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 4f)
+        val animator = ObjectAnimator.ofPropertyValuesHolder(
+                timeView, scaleX, scaleY)
+        animator.repeatCount = 1
+        animator.repeatMode = ObjectAnimator.REVERSE
+        animator.start()
     }
 
     fun onClickReset() {
         running = false
         seconds = 0
+        val animator = ObjectAnimator.ofFloat(timeView, View.ALPHA, 0f)
+        animator.repeatCount = 1
+        animator.repeatMode = ObjectAnimator.REVERSE
+        animator.start()
     }
     fun onClickSave() {
 
@@ -117,24 +130,37 @@ class StoperFragment : Fragment(), View.OnClickListener {
         last?.putInt(item?.content.toString()+"lastsecs",secs)
         last?.apply()
 
+        val animator2 = ObjectAnimator.ofFloat(last_result, View.ALPHA, 0f)
+        animator2.repeatCount = 1
+        animator2.repeatMode = ObjectAnimator.REVERSE
+        animator2.start()
+
         if(
             (hours>best_hours!!)
             || ((hours==best_hours) &&(minutes> best_minutes!!))
             || ((hours==best_hours) &&(minutes== best_minutes!!) && (secs> best_secs!!))
-        ){
+        ) {
             var best = sharedPref?.edit()
-            best?.putInt(item?.content.toString()+"besthours",hours)
-            best?.putInt(item?.content.toString()+"bestminutes",minutes)
-            best?.putInt(item?.content.toString()+"bestsecs",secs)
+            best?.putInt(item?.content.toString() + "besthours", hours)
+            best?.putInt(item?.content.toString() + "bestminutes", minutes)
+            best?.putInt(item?.content.toString() + "bestsecs", secs)
             best?.apply()
-            var time3 = String.format("%d:%02d:%02d", hours,minutes,secs)
+            var time3 = String.format("%d:%02d:%02d", hours, minutes, secs)
             best_result.text = "Najlepszy wynik: " + time3
-        }
 
+            val animator = ObjectAnimator.ofFloat(timeView, View.ROTATION,  0f,3600f)
+            animator.duration = 1000
+            animator.start()
+
+            val animator2 = ObjectAnimator.ofFloat(best_result, View.ALPHA, 0f)
+            animator2.repeatCount = 1
+            animator2.repeatMode = ObjectAnimator.REVERSE
+            animator2.start()
+        }
     }
 
     private fun runStoper(view: View) {
-        val timeView = view.findViewById<View>(R.id.time_view) as TextView
+        timeView = view.findViewById<View>(R.id.time_view) as TextView
         val handler = Handler()
         handler.post(object : Runnable {
             override fun run() {
